@@ -1,6 +1,6 @@
 from django.contrib.auth import get_user_model
 from rest_framework.generics import ListAPIView
-from users.serializers import RegistrationSerializer, UserSerializer, FollowSerializer
+from users.serializers import RegistrationSerializer, UserSerializer
 from djoser.views import UserViewSet
 from rest_framework.views import APIView
 from .models import Follow
@@ -8,11 +8,13 @@ from django.shortcuts import get_list_or_404
 from rest_framework.response import Response
 from rest_framework import status, viewsets
 from rest_framework import mixins, viewsets
+from rest_framework.permissions import AllowAny
 
 User = get_user_model()
 
 class CustomUserViewSet(UserViewSet):
     serializer_class = RegistrationSerializer
+    permission_classes = [AllowAny]
 
 
 class FollowingAPI(APIView):
