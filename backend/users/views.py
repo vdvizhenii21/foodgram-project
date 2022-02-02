@@ -1,6 +1,6 @@
 from django.contrib.auth import get_user_model
 from rest_framework.generics import ListAPIView
-from users.serializers import RegistrationSerializer, UserSerializer
+from users.serializers import RegistrationSerializer, CustomUserSerializer
 from djoser.views import UserViewSet
 from rest_framework.views import APIView
 from .models import Follow
@@ -20,7 +20,7 @@ class CustomUserViewSet(UserViewSet):
 class FollowingAPI(APIView):
     def get(self, request, id):
         follower = User.objects.get(id=id)
-        serializer = UserSerializer(follower)
+        serializer = CustomUserSerializer(follower)
         if not Follow.objects.filter(user=request.user, follower=follower).exists():
             Follow.objects.create(user=request.user, follower=follower)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -38,7 +38,7 @@ class FollowingAPI(APIView):
 
 class FollowsListViewSet(mixins.ListModelMixin,
                      viewsets.GenericViewSet):
-    serializer_class = UserSerializer
+    serializer_class = CustomUserSerializer
     
     def get_queryset(self):
         follow_objects = get_list_or_404(Follow, user=self.request.user)

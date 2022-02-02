@@ -7,7 +7,7 @@ from rest_framework.validators import UniqueTogetherValidator
 
 # User = get_user_model()
 
-class UserSerializer(UserSerializer):
+class CustomUserSerializer(UserSerializer):
     is_subscribed = serializers.SerializerMethodField(read_only=True)
     def get_is_subscribed(self, user_object): 
         return Follow.objects.filter(
