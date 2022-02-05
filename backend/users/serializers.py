@@ -1,11 +1,9 @@
 from djoser.serializers import UserSerializer
-from django.contrib.auth import get_user_model
 from rest_framework import serializers
-from rest_framework.fields import BooleanField
 from .models import User, Follow
 from rest_framework.validators import UniqueTogetherValidator
 
-# User = get_user_model()
+
 
 class CustomUserSerializer(UserSerializer):
     is_subscribed = serializers.SerializerMethodField(read_only=True)
