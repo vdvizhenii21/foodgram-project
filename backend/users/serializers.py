@@ -1,47 +1,56 @@
 from djoser.serializers import UserSerializer
 from rest_framework import serializers
 from .models import User, Follow
-from rest_framework.validators import UniqueTogetherValidator
 
 
-
-class CustomUserSerializer(UserSerializer):
+class CustomUserSerializer(serializers.ModelSerializer):
     is_subscribed = serializers.SerializerMethodField(read_only=True)
-    def get_is_subscribed(self, user_object): 
-        return Follow.objects.filter(
-            user=self.context['request'].user, follower=user_object.id).exists()
+    recipes_count = serializers.SerializerMethodField(read_only=True)
+    recipes = serializers.SerializerMethodField(read_only=True)
+
     class Meta:
         model = User
-        fields = ['email', 'id', 'username', 'first_name', 'last_name', ]
+        fields = (
+            'email',
+            'id',
+            'username',
+            'first_name',
+            'last_name',
+            'is_subscribed',
+            'recipes',
+            'recipes_count'
+        )
+
+    def get_is_subscribed(self, user_object):
+        return Follow.objects.filter(
+            user=self.context['request'].user.id, follower=user_object.id
+        ).exists()
+
+    def get_recipes_count(self, user_object):
+        return user_object.recipes.all().count()
+
+    def get_recipes(self, user_object):
+        from api.serializers import RecipeListSerializer
+        return RecipeListSerializer(
+            user_object.recipes.all(), read_only=True, many=True
+        ).data
         
 
 class RegistrationSerializer(UserSerializer):
-    is_subscribed = serializers.SerializerMethodField(read_only=True)
-    def get_is_subscribed(self, user_object): 
-        return Follow.objects.filter(
-            user=self.context['request'].user, follower=user_object.id).exists()
     class Meta:
         model = User
-        fields = ['email', 'id', 'username', 'first_name', 'last_name', 'is_subscribed']
+        fields = ['email', 'username', 'first_name', 'last_name', 'password']
 
 
-class FollowSerializer(serializers.ModelSerializer):
-    user = serializers.SlugRelatedField(
-        slug_field='username',
-        queryset=User.objects.all(),
-        default=serializers.CurrentUserDefault()
-    )
-    follower = serializers.SlugRelatedField(
-        slug_field='username',
-        queryset=User.objects.all()
-    )
+class UserRecipeSerializer(CustomUserSerializer):
 
     class Meta:
-        fields = '__all__'
-        model = Follow
-        validators = [
-            UniqueTogetherValidator(
-                queryset=Follow.objects.all(),
-                fields=['user', 'follower']
-            )
-        ]
+        model = User
+        fields = (
+            'email',
+            'id',
+            'username',
+            'first_name',
+            'last_name',
+            'is_subscribed'
+        )

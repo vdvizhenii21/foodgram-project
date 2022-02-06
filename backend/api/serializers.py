@@ -2,7 +2,9 @@ from django.db import transaction
 from django.shortcuts import get_list_or_404
 from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
-from users.serializers import CustomUserSerializer
+from users.models import Follow
+from users.serializers import UserRecipeSerializer
+from rest_framework.validators import UniqueTogetherValidator
 
 from .models import Ingredient, IngredientAmount, Recipe, Tag, User
 from .utlils import ingredient_creaton
@@ -50,7 +52,7 @@ class RecipeSerializer(serializers.ModelSerializer):
         many=True,
         source='amount_ingredients',
     )
-    author = CustomUserSerializer(
+    author = UserRecipeSerializer(
         read_only=True,
         required=False
     )
@@ -75,19 +77,15 @@ class RecipeSerializer(serializers.ModelSerializer):
 
     def get_is_favorited(self, current_recipe):
         request = self.context.get('request')
-        if str(request.user) != 'AnonymousUser':
-            return current_recipe.in_favorites.filter(
-                user_id=request.user.pk
-            ).exists()
-        return False
+        return str(request.user) != 'AnonymousUser' and current_recipe.in_favorites.filter(
+            user_id=request.user.pk
+        ).exists()
 
     def get_is_in_shopping_cart(self, current_recipe):
         request = self.context.get('request')
-        if str(request.user) != 'AnonymousUser':
-            return current_recipe.shopping_list.filter(
-                user_id=request.user.pk
-            ).exists()
-        return False
+        return str(request.user) != 'AnonymousUser' and current_recipe.shopping_list.filter(
+            user_id=request.user.pk
+        ).exists()
 
 
 class RecipeCreateUpdateSerializer(RecipeSerializer):
@@ -174,3 +172,38 @@ class RecipeForListSerializer(serializers.ModelSerializer):
             'image',
             'cooking_time',
         )
+
+class FollowSerializer(serializers.ModelSerializer):
+    is_subscribed = serializers.SerializerMethodField()
+    recipes = RecipeForListSerializer(many=True)
+    recipes_count = serializers.SerializerMethodField()
+
+    class Meta:
+        model = User
+        fields = (
+            'email',
+            'id',
+            'username',
+            'first_name',
+            'last_name',
+            'is_subscribed',
+            'recipes',
+            'recipes_count',
+        )
+        validators = [
+            UniqueTogetherValidator(
+                queryset=Follow.objects.all(),
+                fields=['user', 'follower']
+            )
+        ]
+
+    def get_is_subscribed(self, author):
+        request = self.context.get('request')
+        if str(request.user) != 'AnonymousUser':
+            return author.follower.filter(
+                user_id=request.user.pk
+            ).exists()
+        return False
+
+    def get_recipes_count(self, author):
+        return author.recipes.count()
