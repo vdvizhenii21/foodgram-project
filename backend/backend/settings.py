@@ -14,7 +14,7 @@ SECRET_KEY = 'wc!#4+$ab10_l%um_6ve)activ648==^dd4b58)&eq*m43)e7%'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['51.250.15.126', '*']
 
 
 # Application definition
