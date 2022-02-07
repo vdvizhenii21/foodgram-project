@@ -1,3 +1,3 @@
 # praktikum_new_diplom
 Мой Диплом
-111sdfsdfsdf
+111sdfsdfsdfsddsfdsfdsfdfs
