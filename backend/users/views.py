@@ -13,7 +13,7 @@ from rest_framework.permissions import AllowAny
 User = get_user_model()
 
 class CustomUserViewSet(UserViewSet):
-    serializer_class = RegistrationSerializer
+    serializer_class = CustomUserSerializer
     permission_classes = [AllowAny]
 
 
