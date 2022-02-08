@@ -4,7 +4,7 @@ from users.serializers import RegistrationSerializer, CustomUserSerializer
 from djoser.views import UserViewSet
 from rest_framework.views import APIView
 from .models import Follow
-from django.shortcuts import get_list_or_404
+from django.shortcuts import get_list_or_404, get_object_or_404
 from rest_framework.response import Response
 from rest_framework import status, viewsets
 from rest_framework import mixins, viewsets
@@ -21,8 +21,13 @@ class CustomUserViewSet(UserViewSet):
 
 class FollowingAPI(APIView):
     def get(self, request, id):
+        if request.user == get_object_or_404(User, id=id):
+            return Response(
+                {'errors': 'Unable to subscribe to yourself'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
         follower = User.objects.get(id=id)
-        serializer = CustomUserSerializer(follower)
+        serializer = CustomUserSerializer(follower, context={'request': self.request})
         if not Follow.objects.filter(user=request.user, follower=follower).exists():
             Follow.objects.create(user=request.user, follower=follower)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
