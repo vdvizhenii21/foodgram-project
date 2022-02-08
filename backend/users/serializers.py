@@ -30,8 +30,8 @@ class CustomUserSerializer(serializers.ModelSerializer):
         return user_object.recipes.all().count()
 
     def get_recipes(self, user_object):
-        from api.serializers import RecipeListSerializer
-        return RecipeListSerializer(
+        from api.serializers import RecipeForListSerializer
+        return RecipeForListSerializer(
             user_object.recipes.all(), read_only=True, many=True
         ).data
         

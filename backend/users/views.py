@@ -9,11 +9,13 @@ from rest_framework.response import Response
 from rest_framework import status, viewsets
 from rest_framework import mixins, viewsets
 from rest_framework.permissions import AllowAny
+from .paginations import DefaultPagination, UserPagination
 
 User = get_user_model()
 
 class CustomUserViewSet(UserViewSet):
     serializer_class = CustomUserSerializer
+    pagination_class = UserPagination
     permission_classes = [AllowAny]
 
 
@@ -39,6 +41,7 @@ class FollowingAPI(APIView):
 class FollowsListViewSet(mixins.ListModelMixin,
                      viewsets.GenericViewSet):
     serializer_class = CustomUserSerializer
+    pagination_class = DefaultPagination
     
     def get_queryset(self):
         follow_objects = get_list_or_404(Follow, user=self.request.user)

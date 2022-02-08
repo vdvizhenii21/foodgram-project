@@ -90,8 +90,23 @@ class RecipeSerializer(serializers.ModelSerializer):
 
 class RecipeCreateUpdateSerializer(RecipeSerializer):
     ingredients = IngredientAmountSerializerCreateUpdate(many=True)
-    tags = serializers.ListField(child=serializers.IntegerField())
+    tags = serializers.PrimaryKeyRelatedField(
+        many=True,
+        queryset=Tag.objects.all()
+    )
     cooking_time = serializers.IntegerField()
+    image = Base64ImageField()
+
+    class Meta:
+        model = Recipe
+        fields = (
+            'ingredients',
+            'tags',
+            'image',
+            'name',
+            'text',
+            'cooking_time'
+        )
 
     def validate_ingredients(self, value):
         unique = []
@@ -172,6 +187,7 @@ class RecipeForListSerializer(serializers.ModelSerializer):
             'image',
             'cooking_time',
         )
+
 
 class FollowSerializer(serializers.ModelSerializer):
     is_subscribed = serializers.SerializerMethodField()
