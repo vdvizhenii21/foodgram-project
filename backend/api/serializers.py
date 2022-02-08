@@ -90,10 +90,7 @@ class RecipeSerializer(serializers.ModelSerializer):
 
 class RecipeCreateUpdateSerializer(RecipeSerializer):
     ingredients = IngredientAmountSerializerCreateUpdate(many=True)
-    tags = serializers.PrimaryKeyRelatedField(
-        many=True,
-        queryset=Tag.objects.all()
-    )
+    tags = serializers.ListField(child=serializers.IntegerField())
     cooking_time = serializers.IntegerField()
     image = Base64ImageField()
 
