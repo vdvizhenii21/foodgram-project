@@ -15,14 +15,14 @@ urlpatterns = [
     path(
         '', include(router_v1.urls),
     ),
-    re_path(
-        r'recipes/(?P<recipe_id>\d+)/favorite/',
-        FavoriteCreateDestroy.as_view(),
-        name='favorite',
-    ),
-    re_path(
-        r'recipes/(?P<recipe_id>\d+)/shopping_cart/',
-        ShoppingListCreateDestroy.as_view(),
-        name='shopping-list',
-    ),
+    #re_path(
+    #    r'recipes/(?P<recipe_id>\d+)/favorite/',
+    #    FavoriteCreateDestroy.as_view(),
+    #    name='favorite',
+    #),
+    #re_path(
+    #    r'recipes/(?P<recipe_id>\d+)/shopping_cart/',
+    #    ShoppingListCreateDestroy.as_view(),
+    #    name='shopping-list',
+    #),
 ]

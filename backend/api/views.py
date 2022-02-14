@@ -156,7 +156,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
             permission_classes=(permissions.IsAuthenticated,),
             name='favorite')
     def favorite(self, request, pk=None):
-        return self.favorite_and_shopping(request.user.shopping_list)
+        return self.favorite_and_shopping(request.in_favorites)
 
     @action(detail=True, methods=['get', 'delete'],
             permission_classes=(permissions.IsAuthenticated,),
