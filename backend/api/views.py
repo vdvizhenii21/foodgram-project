@@ -156,13 +156,13 @@ class RecipeViewSet(viewsets.ModelViewSet):
             permission_classes=(permissions.IsAuthenticated,),
             name='favorite')
     def favorite(self, request, pk=None):
-        return self.favorite_and_shopping(request.user.favorites_recipes)
+        return self.favorite_and_shopping(request.user.shopping_list)
 
     @action(detail=True, methods=['get', 'delete'],
             permission_classes=(permissions.IsAuthenticated,),
             name='shopping_cart')
     def shopping_cart(self, request, pk=None):
-        return self.favorite_and_shopping(request.user.shopping_user)
+        return self.favorite_and_shopping(request.user.shopping_list)
 
 
 # class FavoriteCreateDestroy(GenericAPIView):
